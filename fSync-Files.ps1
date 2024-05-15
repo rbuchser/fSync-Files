@@ -1,4 +1,4 @@
-﻿Function fSync-Files {
+Function fSync-Files {
 	<#
 		.NOTES
 			Author: Buchser Roger
@@ -38,7 +38,7 @@
 		
 	# Define ServerTargetScope
 	[String[]]$ServerTargetScope = $TargetServers | Where {$_ -notmatch $Env:COMPUTERNAME} | Sort
-	[String[]]$SourceItems = Get-ChildItem $SourceFiles -ErrorAction SilentlyContinue
+	$SourceItems = Get-ChildItem $SourceFiles -ErrorAction SilentlyContinue
 		
 	If (($SourceItems) -AND ($ServerTargetScope)) {
 		
@@ -100,7 +100,6 @@
 					}
 				}
 				
-				$Result = @()
 				ForEach ($Server in $ServerTargetScope) {
 					
 					If ($FileToSync.DirectoryName -like "\\*\*") {
@@ -113,10 +112,8 @@
 						Try {
 							Copy-Item -Path $FileToSync.FullName -Destination $DestinationPath | Out-Null
 							Write-Host "Successfully copying File `'$($FileToSync.Name)`' to Server `'$Server`'" -f Green
-							$Result += "$CurrentDate;Success;$($FileToSync.FullName);$($DestinationPath + $($FileToSync.Name));"
 						} Catch {
 							Write-Host "Error copying `'$($FileToSync.Name)`' to Server `'$Server`'" -f Red
-							$Result += "$CurrentDate;Fail;$($FileToSync.FullName);$($DestinationPath + $($FileToSync.Name));$(($Error[0].Exception.LABsage).ToString())"
 							$Error[0]
 						}
 					} Else {
@@ -125,10 +122,8 @@
 							Try {
 								Copy-Item -Path $FileToSync.FullName -Destination $DestinationPath | Out-Null
 								Write-Host "Successfully copying File `'$($FileToSync.Name)`' to Server `'$Server`'" -f Green
-								$Result += "$CurrentDate;Success;$($FileToSync.FullName);$($DestinationPath + $($FileToSync.Name));"
 							} Catch {
 								Write-Host "Error copying `'$($FileToSync.Name)`' to Server `'$Server`'" -f Red
-								$Result += "$CurrentDate;Fail;$($FileToSync.FullName);$($DestinationPath + $($FileToSync.Name));$(($Error[0].Exception.LABsage).ToString())"
 								$Error[0]
 							}
 						} Else {	
